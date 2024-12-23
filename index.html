@@ -120,13 +120,10 @@
     }
 
     // 上传文件到 Cloudinary
-    async function uploadToCloudinary(file,public_id = null) {
+    async function uploadToCloudinary(file) {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', UPLOAD_PRESET);
-        if(public_id){
-          formData.append('public_id', public_id);
-        }
 
         response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`, {
           method: 'POST',
@@ -252,11 +249,11 @@
       for(let video1 of uploadedIds[0]){
         for(let video2 of uploadedIds[1]){
           let url = generateEditUrl([video1, video2], selectedIntroEffect);
-          const response0 = await uploadToCloudinary(url,video1+video2);
+          const response0 = await uploadToCloudinary(url);
           publicId0 = response0.public_id;
           for(let video3 of uploadedIds[2]){
             const editUrl = generateEditUrl([publicId0, video3], selectedOutroEffect);
-            const response1 = await uploadToCloudinary(editUrl,video1+video2+video3);
+            const response1 = await uploadToCloudinary(editUrl);
             publicId1 = response1.public_id;
             resultUrls.push(publicId1);
             // 调用 Cloudinary 视频编辑 API 生成视频
