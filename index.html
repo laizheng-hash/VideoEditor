@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>视频上传到 Cloudinary</title>
+  <title>视频拼接处理</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -28,14 +28,6 @@
     }
     .drop-zone h2 {
       margin: 0;
-    }
-    .uploaded-list {
-      margin-top: 20px;
-      list-style: none;
-      padding: 0;
-    }
-    .uploaded-list li {
-      margin-bottom: 10px;
     }
     .controls {
       margin-top: 20px;
@@ -64,13 +56,13 @@
   </style>
 </head>
 <body>
+  <button id="quashButton">返回上一步</button>
   <div id="dropZone" class="drop-zone">
     <h2 id="dropZoneMessage">请拖入视频</h2>
   </div>
   <div class="progress-bar-container">
     <div id="progressBar" class="progress-bar"></div>
   </div>
-  <ul id="uploadedList" class="uploaded-list"></ul>
   <div id="controls" class="controls">
     <select id="introEffect">
       <option value="fade">片头转场: Fade</option>
@@ -100,7 +92,7 @@
     const dropZone = document.getElementById('dropZone');
     const dropZoneMessage = document.getElementById('dropZoneMessage');
     const dropZoneMusicMessage = document.getElementById('dropZoneMusicMessage');
-    const uploadedList = document.getElementById('uploadedList');
+    const quashButton = document.getElementById('quashButton');
     const controls = document.getElementById('controls');
     const introEffect = document.getElementById('introEffect');
     const outroEffect = document.getElementById('outroEffect');
@@ -188,9 +180,6 @@
         console.log(publicId)
         if (publicId) {
           uploadedIds[currentStep].push(publicId); // 保存 public_id
-          const listItem = document.createElement('li');
-          listItem.textContent = `${steps[currentStep]} 视频: ${publicId}`;
-          uploadedList.appendChild(listItem);
         }
       }
       console.log(uploadedIds)
@@ -225,6 +214,20 @@
       handleFiles(e.dataTransfer.files);
     });
 
+    quashButton.addEventListener('click', () => {
+      if(currentStep > 0){
+        if(currentStep > 1){
+          dropZone.style.display = 'flex';
+        progressBar.style.display = 'flex';
+        controls.style.display = 'none';
+        }
+        currentStep--;
+        updateMessage();
+        uploadedIds[currentStep] = [];
+        console.log(uploadedIds)
+      }
+    });
+
     dropZoneMusic.addEventListener('dragover', (e) => {
       e.preventDefault();
       dropZoneMusic.classList.add('active');
@@ -243,6 +246,7 @@
 
     let resultUrls = []
     nextButton.addEventListener('click', async() => {
+      quashButton.style.display = 'none';
       const selectedIntroEffect = introEffect.value;
       const selectedOutroEffect = outroEffect.value;
       for(let video1 of uploadedIds[0]){
