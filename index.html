@@ -246,6 +246,9 @@
       quashButton.style.display = 'none';
       const selectedIntroEffect = introEffect.value;
       const selectedOutroEffect = outroEffect.value;
+      nextButton.style.display = 'none';
+      var text = document.createTextNode("正在拼接视频，请稍后...");
+      document.body.appendChild(text);
       for(let video1 of uploadedIds[0]){
         for(let video2 of uploadedIds[1]){
           let url = generateEditUrl([video1, video2], selectedIntroEffect);
@@ -263,45 +266,49 @@
       }
       controls.style.display = 'none';
       finalPage.style.display = 'flex';
+      text.remove();
     });
-
-    generateButton.addEventListener('click', async() => {
-      if(uploading){
-        alert("请等待上传完成！");
-        return;
-      }
-      for(let url of resultUrls){
-        const finalUrl = generateVideo(url,VideoSize.value);
-      var fileName = url; // 下载的文件名
 
       // 创建一个隐藏的a标签
       var a = document.createElement('a');
       a.style.display = 'none';
       document.body.appendChild(a);
 
-      // 使用XMLHttpRequest下载视频
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', finalUrl, true);
-      xhr.responseType = 'blob';
-
-      xhr.onload = function() {
-        if (xhr.status === 200) {
-          // 将视频Blob对象创建一个临时URL
-          var videoBlob = xhr.response;
-          var url = window.URL.createObjectURL(videoBlob);
-
-          // 设置a标签的属性，并触发点击事件进行下载
-          a.href = url;
-          a.download = fileName;
-          a.click();
-
-          // 释放URL对象
-          window.URL.revokeObjectURL(url);
-        }
-      };
-
-      xhr.send()
+      
+    generateButton.addEventListener('click', async() => {
+      if(uploading){
+        alert("请等待上传完成！");
+        return;
       }
+      generateButton.style.display = 'none';
+      var text = document.createTextNode("正在生成视频，请稍后...");
+      document.body.appendChild(text);
+      for(let url of resultUrls){
+        const finalUrl = generateVideo(url,VideoSize.value);
+        var fileName = url; // 下载的文件名
+        // 使用XMLHttpRequest下载视频
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', finalUrl, true);
+        xhr.responseType = 'blob';
+
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            // 将视频Blob对象创建一个临时URL
+            var videoBlob = xhr.response;
+            var url = window.URL.createObjectURL(videoBlob);
+
+            // 设置a标签的属性，并触发点击事件进行下载
+            a.href = url;
+            a.download = fileName;
+            a.click();
+
+            // 释放URL对象
+            window.URL.revokeObjectURL(url);
+          }
+        };
+        xhr.send()
+      }
+      text.value = "生成完成！"
     });
 
     updateMessage();
