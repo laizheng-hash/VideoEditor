@@ -82,13 +82,17 @@
     </div>
     <select id="VideoSize">
       <option value="1280x720">1280x720</option>
+      <option value="720x1280">720x1280</option>
       <option value="1080x1080">1080x1080</option>
       <option value="720x900">720x900</option>
     </select>
     <button id="generateButton">生成视频</button>
   </div>
+  <script type="module">
 
-  <script>
+    import { trim, concatenate } from "./@cloudinary/url-gen/actions/videoEdit";
+    import { videoSource } from "./@cloudinary/url-gen/qualifiers/concatenate"
+
     const dropZone = document.getElementById('dropZone');
     const dropZoneMessage = document.getElementById('dropZoneMessage');
     const dropZoneMusicMessage = document.getElementById('dropZoneMusicMessage');
@@ -190,11 +194,13 @@
     function generateEditUrl(videoIds, effect) {
       return `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/fl_splice:transition_(name_${effect};du_1),l_video:${videoIds[1]}/fl_layer_apply/${videoIds[0]}`
     }
+
     // 设置视频尺寸
     function generateVideo(videoid,size){
       return `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/l_audio:${musicId}/b_blurred:400:15,c_pad,w_${size.split('x')[0]},h_${size.split('x')[1]}/${videoid}`
     }
-
+    // `https://res.cloudinary.com/dhkncgrvz/video/upload/fl_splice/l_audio:ixtubjucabexek5pzt4u/zxs74pif6skqzp1ra3bz`
+    // `https://res.cloudinary.com/dhkncgrvz/video/upload/fl_splice:transition_(name_fade;du_1.0),l_video:h38ek8s2hw4thcn1zy32/fl_layer_apply/fl_splice:transition_(name_fade),l_video:r0jt5cobovje2i5fsp8y/fl_layer_apply/hk3mi6o0yjty7sdbmvi2.mp4`
     // 拖放事件处理
     dropZone.addEventListener('dragover', (e) => {
       e.preventDefault();
